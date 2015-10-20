@@ -25,7 +25,7 @@ data Input a
 --
 genWhnf
   :: (Ord a, Arbitrary a)
-  => Int                      -- ^ number of inputs
+  => Int                      -- ^ max number of inputs
   -> (Int, Int)               -- ^ range of input size
   -> (Int -> a)               -- ^ given a size, how to generate an input
   -> (a -> b)                 -- ^ function to evaluate
@@ -40,7 +40,7 @@ genWhnf n range fromSize func
 --
 genNf
   :: (Ord a, Arbitrary a, NFData b)
-  => Int                            -- ^ number of inputs
+  => Int                            -- ^ max number of inputs
   -> (Int, Int)                     -- ^ range of input size
   -> (Int -> a)                     -- ^ given a size, how to generate an input
   -> (a -> b)                       -- ^ function to evaluate
@@ -49,11 +49,9 @@ genNf n range fromSize func
   = do xs <- genInputs n range fromSize
        return $ zipWith ((,) . nf func . input) xs xs
 
--- uhh number of inputs are not guaranteed
---
 genInputs
   :: (Arbitrary a)
-  => Int         -- ^ number of inputs
+  => Int         -- ^ max number of inputs
   -> (Int, Int)  -- ^ range of input size
   -> (Int -> a)  -- ^ given a size, generate an input
   -> Gen [Input a]
