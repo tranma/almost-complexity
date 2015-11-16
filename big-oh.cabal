@@ -15,16 +15,18 @@ library
                      , Test.BigOh.Benchmark
                      , Test.BigOh.Generate
                      , Test.BigOh.Plot
+                     , Test.BigOh.Fit
 
   build-depends:       base >= 4.8 && < 5
-                     , hakaru >= 0.3
-                     , criterion >= 1.0
-                     , statistics >= 0.13 && < 0.14
+                     , hakaru == 0.1.4
+                     , criterion
+                     , statistics
                      , ansigraph >= 0.1
                      , QuickCheck >= 2.8
                      , transformers
                      , array
                      , deepseq
+                     , vector
 
   hs-source-dirs:      src
   default-language:    Haskell2010
