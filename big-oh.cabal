@@ -29,6 +29,8 @@ library
                      , array
                      , deepseq
                      , vector
+                     , discrimination >= 0.1
+                     , ansi-terminal >= 0.6
 
   hs-source-dirs:      src
   default-language:    Haskell2010

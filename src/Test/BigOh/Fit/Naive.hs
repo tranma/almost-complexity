@@ -10,10 +10,10 @@ type Order = Int -- ahahaha
 
 
 fit :: Order -> [Point] -> Bool
-fit order points = go (1000 :: Int) startEpsilon
+fit order points = go (100 :: Int) startEpsilon
   where
     startEpsilon
-      = sd $ fmap snd points
+      = 2.1e-6 -- 0.1 * sd (fmap snd points)
     go 0 _
       = False
     go n e

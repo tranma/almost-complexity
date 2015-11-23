@@ -17,3 +17,6 @@ variance _ = 0 / 0
 
 sd :: [Double] -> Double
 sd = sqrt . variance
+
+mean :: [Double] -> Double
+mean xs = sum xs / fromIntegral (length xs)

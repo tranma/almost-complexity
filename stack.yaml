@@ -6,4 +6,6 @@ packages:
 extra-deps:
 - ansigraph-0.1.0.0
 - logfloat-0.13.3.3
+- discrimination-0.1
+- promises-0.2
 resolver: lts-3.11
