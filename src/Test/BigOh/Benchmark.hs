@@ -5,9 +5,10 @@ module Test.BigOh.Benchmark
   ( -- * Running benchmarks
     runInputs
   , getTimes
+  , runtimes
   ) where
 
-import           Control.Applicative
+import           Control.Arrow
 import           Control.Monad.IO.Class
 import           Criterion.Internal
 import           Criterion.Main
@@ -17,6 +18,11 @@ import           Criterion.Types
 import           Statistics.Resampling.Bootstrap
 
 import           Test.BigOh.Generate
+
+conf = defaultConfig { resamples = 10 }
+
+runtimes :: [(Benchmarkable, Input a)] -> IO [(Double, Double)]
+runtimes x = fmap (first fromIntegral) . getTimes <$> runInputs defaultConfig x
 
 runOne :: Config -> Benchmarkable -> IO Report
 runOne cfg x
@@ -33,3 +39,4 @@ getTimes = map go
   where
     go (i, report)
       = (inputSize i, estPoint $ anMean $ reportAnalysis report)
+

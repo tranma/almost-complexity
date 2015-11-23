@@ -15,7 +15,8 @@ library
                      , Test.BigOh.Benchmark
                      , Test.BigOh.Generate
                      , Test.BigOh.Plot
-                     , Test.BigOh.Fit
+                     , Test.BigOh.Fit.Hakaru
+                     , Test.BigOh.Fit.Naive
 
   build-depends:       base >= 4.8 && < 5
                      , hakaru == 0.1.4
