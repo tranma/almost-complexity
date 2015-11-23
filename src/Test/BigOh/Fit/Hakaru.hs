@@ -18,8 +18,8 @@ module Test.BigOh.Fit.Hakaru
   , fit
   ) where
 
-import           Control.Monad
 import           Control.Arrow
+import           Control.Monad
 import           Data.Dynamic
 import           Data.List
 import           Data.Monoid
@@ -30,7 +30,7 @@ import           Language.Hakaru.Metropolis
 import           Language.Hakaru.Types
 import qualified Statistics.Sample            as S
 
-import Debug.Trace
+import           Test.BigOh.Fit.Base
 
 
 data Fit
@@ -75,19 +75,27 @@ bestFit' orders f@(Fit xs ys _ _)
 --   that order that fit the data.
 --
 curveFit :: Order -> Fit -> IO (Double -> Double)
-curveFit thing (Fit x y dropn taken)
- = do l <- mcmc (measureForOrder thing x) (map (Just . toDyn . Lebesgue) y)
+curveFit thing (Fit xs ys dropn taken)
+ = do l <- mcmc (measureForOrder thing xs ys)
+                (map (Just . toDyn . Lebesgue) ys)
       let means = expectations $ take taken $ drop dropn l
       return $ mkCurve thing means
 
 -- | Create a sampler for a class of curves with some x values.
 --   e.g. sample @y = a*x^2 + b*x +c@
 --
-measureForOrder :: Order -> [Double] -> Measure [Double]
-measureForOrder (Order _ n f) x = do
-    w <- replicateM n $ unconditioned (normal 0 (fromIntegral n))
-    mapM_ (conditioned . flip normal 1 . f w) x
-    return w
+measureForOrder :: Order -> [Double] -> [Double] -> Measure [Double]
+measureForOrder order xs ys
+  = measureForOrder' 0 (maximum $ fmap abs ys) (sd ys) order xs
+
+measureForOrder' :: Double -> Double -> Double -> Order -> [Double] -> Measure [Double]
+measureForOrder' mean range sdev (Order _ n func) xs
+  = do w <- replicateM n $ unconditioned (normal mean range)
+       y <- mapM (conditioned . withinNormal w) xs
+       return w
+  where
+   withinNormal w x
+     = normal (func w x) sdev
 
 -- | Given a bunch of possible coefficient sets, return the
 --   expected value of each coeffient.
@@ -155,4 +163,4 @@ rSquared ys fs
  = let yBar  = sum ys / fromIntegral (length ys)
        ssTot = sum (fmap (square . subtract yBar) ys)
        ssRes = sum (fmap square (zipWith (-) ys fs))
-   in  trace ("ys=" <> show ys <> "\nfs=" <> show fs) $ (ssTot - ssRes) / ssTot
+   in  (ssTot - ssRes) / ssTot
