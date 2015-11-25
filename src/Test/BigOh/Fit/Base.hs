@@ -2,6 +2,8 @@ module Test.BigOh.Fit.Base where
 
 import Data.List
 
+type Point = (Double, Double)
+
 variance :: [Double] -> Double
 variance xs@(_:_:_)
  = let (n,_,m2) = foldl' go (0,0,0) xs

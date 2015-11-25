@@ -3,6 +3,11 @@ extra-package-dbs: []
 packages:
 - '.'
 - ../hakaru-0.1.4
+- location:
+    git: git@github.com:tweag/HaskellR
+    commit: c29067a23c3d0a353a4373c60b7897dbd186a516
+  subdirs:
+  - inline-r
 extra-deps:
 - ansigraph-0.1.0.0
 - logfloat-0.13.3.3

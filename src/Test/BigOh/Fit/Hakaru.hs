@@ -42,8 +42,8 @@ data Fit
 
 -- | Given a complexity order and some data,
 --   determine if the order best describes the data.
-fit :: Order -> [Order] -> [Double] -> [Double] -> IO Bool
-fit order orders xs ys
+fit :: (Order -> Bool) -> [Order] -> [Double] -> [Double] -> IO Bool
+fit predi orders xs ys
   = go (50 :: Int) burnStart takeStart
   where
    burnStart = 10000
@@ -52,7 +52,7 @@ fit order orders xs ys
     = do ranked    <- bestFit' orders (Fit xs ys b t)
          putStrLn ("ranked: " <> show (fmap (first name) ranked))
          let order' = fst $ head ranked
-         if | name order == name order' -> return True
+         if | predi order'              -> return True
             | try        == 0           -> return False
             | otherwise                 -> go (try - 1) (b * 2) (t * 2)
 

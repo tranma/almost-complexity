@@ -1,20 +1,20 @@
 {-# LANGUAGE FlexibleContexts #-}
--- * Plot simple y(x) functions in ASCII
---
 module Test.BigOh.Plot where
 
 import           Control.Arrow
 import           Control.Monad
 import           Control.Monad.ST
-import qualified Data.Array.MArray  as AM
+import qualified Data.Array.MArray        as AM
 import           Data.Array.ST
-import qualified Data.Array.ST      as AS
+import qualified Data.Array.ST            as AS
 import           Data.Array.Unboxed
-import qualified Data.List          as L
+import qualified Data.List                as L
+import           Data.Ord
 import           Data.STRef
+import           System.Console.ANSI
+import           System.Console.Ansigraph
 
 type Range  = (Double, Double)
-type Points = [(Double, Double)]
 
 data Plot
   = Plot
@@ -22,6 +22,19 @@ data Plot
   , plotHeight :: Int
   , plotPoints :: [(Double, Double)] }
   deriving Show
+
+graphPoints :: [(Double, Double)] -> IO ()
+graphPoints points
+  | ps <- shiftUp points
+  = mapM_ (posgraph . fmap (fromIntegral :: Int -> Double))
+          (plotToGraphs $ Plot 32 64 ps)
+
+shiftUp :: [(Double, Double)] -> [(Double, Double)]
+shiftUp ps
+  = let minY = snd $ L.minimumBy (comparing snd) ps
+    in  if minY < 0
+        then fmap (second (+ abs minY)) ps
+        else ps
 
 plotToGraphs :: Plot -> [[Int]]
 plotToGraphs p@(Plot _ height _)
@@ -94,3 +107,35 @@ bresenham vec val (xa, ya) (xb, yb)
           get    = Data.STRef.readSTRef
           mutate = Data.STRef.modifySTRef
           draw (x,y) = AM.writeArray vec (x,y) val
+
+--------------------------------------------------------------------------------
+
+withColor :: Color -> a -> String -> IO a
+withColor c r x = do
+  setSGR [SetColor Foreground Vivid c]
+  putStrLn x
+  setSGR [Reset]
+  return r
+
+passed, failed, inconclusive :: String -> IO Bool
+passed       = withColor Green True
+failed       = withColor Red False
+inconclusive = withColor Yellow False
+
+header = withColor Blue ()
+
+superscript :: Int -> String
+superscript = map go . show
+  where
+    go '0' = '⁰'
+    go '1' = '¹'
+    go '2' = '²'
+    go '3' = '³'
+    go '4' = '⁴'
+    go '5' = '⁵'
+    go '6' = '⁶'
+    go '7' = '⁷'
+    go '8' = '⁸'
+    go '9' = '⁹'
+    go x   = x
+

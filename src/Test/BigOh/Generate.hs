@@ -23,6 +23,7 @@ data Input a
   , inputSize :: Int
   } deriving (Show)
 
+
 -- | Given a function `f :: a -> b`, generate inputs of type `a`,
 --   then apply the generated inputs to `f` and evaluate to
 --   weak head-normal form.

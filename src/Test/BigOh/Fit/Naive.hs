@@ -1,37 +1,14 @@
 module Test.BigOh.Fit.Naive
-  ( fit
+  ( Order
+  , fit
   , polyOrder
+  , deriv
   ) where
 
 import           Test.BigOh.Fit.Base
 
-type Point = (Double, Double)
 type Order = Int -- ahahaha
 
-
-fit :: Order -> [Point] -> Bool
-fit order points = go (100 :: Int) startEpsilon
-  where
-    startEpsilon
-      = 2.1e-6 -- 0.1 * sd (fmap snd points)
-    go 0 _
-      = False
-    go n e
-      = case polyOrder e points of
-          -- haven't found an order
-          Nothing
-            -> go (n - 1) (e * 2 / 3)
-          -- found an order
-          Just order'
-            -- but it's not the right one, it's less
-            | order' < order
-            -> go (n - 1) (e * 2)
-            -- but it's not the right one, it's more
-            | order' > order
-            -> go (n - 1) (e * 2 / 3)
-            -- bingo
-            | otherwise
-            -> True
 
 -- | Estimate the polynomial order for some points, given
 --   a margin of error.
@@ -56,3 +33,28 @@ deriv points
 gradient :: Point -> Point -> Double
 gradient (x1, y1) (x2, y2)
    = (y2 - y1) / (x2 - x1)
+
+-- doesn't work very well, just use polyOrder
+fit :: Order -> [Point] -> Bool
+fit order points = go (100 :: Int) startEpsilon
+  where
+    startEpsilon
+      = 2.1e-6 -- 0.1 * sd (fmap snd points)
+    go 0 _
+      = False
+    go n e
+      = case polyOrder e points of
+          -- haven't found an order
+          Nothing
+            -> go (n - 1) (e * 2 / 3)
+          -- found an order
+          Just order'
+            -- but it's not the right one, it's less
+            | order' < order
+            -> go (n - 1) (e * 2)
+            -- but it's not the right one, it's more
+            | order' > order
+            -> go (n - 1) (e * 2 / 3)
+            -- bingo
+            | otherwise
+            -> True

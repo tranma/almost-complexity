@@ -16,11 +16,13 @@ library
                      , Test.BigOh.Generate
                      , Test.BigOh.Plot
                      , Test.BigOh.Fit.Hakaru
+                     , Test.BigOh.Fit.R
                      , Test.BigOh.Fit.Naive
                      , Test.BigOh.Fit.Base
 
   build-depends:       base >= 4.8 && < 5
                      , hakaru == 0.1.4
+                     , inline-r
                      , criterion
                      , statistics
                      , ansigraph >= 0.1
